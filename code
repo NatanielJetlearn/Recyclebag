@@ -19,6 +19,7 @@ current_level = 1
 items = []
 animations = []
 
+
 def draw():
     global items,current_level,game_over,game_complete
     screen.clear()
@@ -31,6 +32,7 @@ def draw():
         for item in items:
             item.draw()
 
+#update function for managing game logic
 def update():
     global items
     if len(items) == 0:
@@ -70,22 +72,49 @@ def layout_items(items_to_layout):
 
 
 def animate_items(items_to_animate):
-    pass
+    global animations
+    for item in items_to_animate:
+        duration = START_SPEED - current_level
+        item.anchor = ("center","bottom")
+        animation = animate(item,duration=duration,on_finished = handle_game_over,y=HEIGHT)
+        animations.append(animation)
 
 def handle_game_over():
-    pass
+    global game_over
+    game_over = True
 
 def on_mouse_down(pos):
-    pass
-
+    global items
+    global current_level
+    for item in items:
+        if item.collidepoint(pos):
+            if "paper_bag" in item.image:
+                handle_game_complete()
+            else:
+                handle_game_over()
+            
 def handle_game_complete():
-    pass
+    global items
+    global current_level
+    global animations
+    global game_complete
+    stop_animations(animations)
+    if current_level == FINAL_LEVEL:
+        game_complete = True 
+    else:
+        current_level += 1
+        items = []
+        animations = []
 
 def stop_animations(animations_to_stop):
-    pass
+    global items
+    global animations
+    for animation in animations_to_stop:
+        if animation.running:
+            animation.stop()
 
 def display_message(heading_text,sub_heading_text):
-    pass
-
+    screen.draw.text(heading_text, fontsize = 60, center=CENTRE, color = "white")
+    screen.draw.text(heading_text, fontsize = 30, center=(CENTRE_X,CENTRE_Y + 50), color = "white")
 
 pgzrun.go()
